@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - {{ brand_name }}{% endblock %}
+
+{% block content %}
+<section class="page-header page-header-compact">
+    <div class="page-header-content" data-gsap="fade-up">
+        <h1><i class="fas fa-user-circle"></i> My <span class="gradient-text">Profile</span></h1>
+        <p>Manage your account and view prediction history</p>
+    </div>
+</section>
+
+<div class="profile-grid">
+    <!-- Profile Card -->
+    <div class="profile-sidebar" data-gsap="fade-right">
+        <div class="glass-card profile-card">
+            <div class="profile-avatar">
+                <div class="avatar-ring">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <div class="profile-info">
+                <h3>{{ current_user.username }}</h3>
+                {% if current_user.full_name %}<p class="profile-name">{{ current_user.full_name }}</p>{% endif %}
+                {% if current_user.email %}<p class="profile-email"><i class="fas fa-envelope"></i> {{ current_user.email }}</p>{% endif %}
+                <p class="profile-joined"><i class="fas fa-calendar"></i> Joined {{ current_user.created_at.strftime('%B %d, %Y') }}</p>
+                {% if current_user.last_login %}<p class="profile-last"><i class="fas fa-clock"></i> Last login {{ current_user.last_login.strftime('%B %d, %Y %H:%M') }}</p>{% endif %}
+            </div>
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <span class="stat-num">{{ predictions|length }}</span>
+                    <span class="stat-label">Predictions</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="glass-card danger-card" data-gsap="fade-up" data-delay="0.2">
+            <div class="card-header danger-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+            </div>
+            <div class="card-body">
+                <p>Deleting your account will permanently remove all your data and prediction history. This action cannot be undone.</p>
+                <button type="button" class="btn btn-danger btn-full" onclick="confirmDelete()">
+                    <i class="fas fa-trash-alt"></i> Delete My Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction History -->
+    <div class="profile-main" data-gsap="fade-left">
+        <div class="glass-card history-card">
+            <div class="card-header">
+                <h3><i class="fas fa-history"></i> Prediction History</h3>
+            </div>
+            <div class="card-body">
+                {% if predictions %}
+                <div class="table-responsive">
+                    <table class="data-table history-table-full">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Glucose</th>
+                                <th>BMI</th>
+                                <th>Age</th>
+                                <th>Model</th>
+                                <th>Risk Level</th>
+                                <th>Probability</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pred in predictions %}
+                            <tr>
+                                <td>{{ pred.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ pred.glucose }}</td>
+                                <td>{{ pred.bmi }}</td>
+                                <td>{{ pred.age }}</td>
+                                <td>{{ pred.selected_model }}</td>
+                                <td>
+                                    <span class="risk-pill risk-{{ pred.risk_level|lower|replace(' ', '-') }}">
+                                        {{ pred.risk_level }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="prob-bar-mini">
+                                        <div class="prob-fill" style="width: {{ pred.ensemble_probability * 100 }}%; background: {% if pred.ensemble_probability < 0.3 %}#22c55e{% elif pred.ensemble_probability < 0.6 %}#eab308{% elif pred.ensemble_probability < 0.8 %}#f97316{% else %}#ef4444{% endif %}"></div>
+                                        <span>{{ "%.1f"|format(pred.ensemble_probability * 100) }}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if pred.ensemble_prediction == 1 %}
+                                    <span class="result-badge result-positive"><i class="fas fa-exclamation"></i> Positive</span>
+                                    {% else %}
+                                    <span class="result-badge result-negative"><i class="fas fa-check"></i> Negative</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state small">
+                    <div class="empty-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <h4>No Predictions Yet</h4>
+                    <p>Go to the dashboard and make your first prediction.</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                        <i class="fas fa-chart-line"></i> Open Dashboard
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteModal" style="display: none;">
+    <div class="glass-card modal-card">
+        <div class="modal-header">
+            <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 3rem;"></i>
+            <h3>Delete Account?</h3>
+            <p>This will permanently delete your account and all prediction history. This cannot be undone.</p>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-glass" onclick="closeDeleteModal()">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn" onclick="executeDelete()">
+                <span class="btn-text"><i class="fas fa-trash-alt"></i> Yes, Delete</span>
+                <span class="btn-loader"><i class="fas fa-circle-notch fa-spin"></i></span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete() {
+    document.getElementById('deleteModal').style.display = 'flex';
+    gsap.from('.modal-card', { scale: 0.8, opacity: 0, duration: 0.3, ease: 'back.out(1.7)' });
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+async function executeDelete() {
+    const btn = document.getElementById('confirmDeleteBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('/api/delete-account', { method: 'POST' });
+        const result = await res.json();
+        if (result.success) {
+            window.location.href = '/';
+        } else {
+            alert(result.error);
+            closeDeleteModal();
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+        closeDeleteModal();
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+}
+
+// Close modal on overlay click
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+});
+</script>
+{% endblock %}

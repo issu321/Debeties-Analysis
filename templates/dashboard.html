@@ -1,0 +1,555 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - {{ brand_name }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header page-header-compact">
+    <div class="page-header-content" data-gsap="fade-up">
+        <h1><i class="fas fa-chart-line"></i> Prediction <span class="gradient-text">Dashboard</span></h1>
+        <p>Enter patient data, select algorithm, and get instant AI-powered risk assessment</p>
+    </div>
+</section>
+
+<!-- Status Bar -->
+<div class="status-bar" data-gsap="fade-up">
+    <div class="status-item">
+        <i class="fas fa-trophy"></i>
+        <span>Best Model: <strong class="gradient-text">{{ best_model }}</strong></span>
+    </div>
+    <div class="status-item">
+        <i class="fas fa-brain"></i>
+        <span>Models Loaded: <strong>{{ model_names|length }}</strong></span>
+    </div>
+    <div class="status-item">
+        <i class="fas fa-database"></i>
+        <span>Samples: <strong>{{ stats.total_samples }}</strong></span>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid -->
+<div class="dashboard-grid">
+    <!-- Left: Prediction Form -->
+    <div class="dashboard-form-panel" data-gsap="fade-right">
+        <div class="glass-card form-card">
+            <div class="card-header">
+                <h3><i class="fas fa-stethoscope"></i> Patient Data</h3>
+                <div class="preset-buttons">
+                    <button type="button" class="btn btn-sm btn-glass" onclick="applyPreset('healthy')">
+                        <i class="fas fa-smile"></i> Healthy
+                    </button>
+                    <button type="button" class="btn btn-sm btn-glass" onclick="applyPreset('atrisk')">
+                        <i class="fas fa-exclamation-circle"></i> At Risk
+                    </button>
+                    <button type="button" class="btn btn-sm btn-glass" onclick="applyPreset('highrisk')">
+                        <i class="fas fa-fire"></i> High Risk
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="predictionForm" class="prediction-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-baby input-icon"></i>
+                                <input type="number" name="pregnancies" id="pregnancies" min="0" max="20" value="1" step="1">
+                                <label>Pregnancies</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-tint input-icon"></i>
+                                <input type="number" name="glucose" id="glucose" min="0" max="300" value="120">
+                                <label>Glucose (mg/dL)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-heartbeat input-icon"></i>
+                                <input type="number" name="blood_pressure" id="blood_pressure" min="0" max="200" value="70">
+                                <label>Blood Pressure (mm Hg)</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-ruler input-icon"></i>
+                                <input type="number" name="skin_thickness" id="skin_thickness" min="0" max="100" value="20">
+                                <label>Skin Thickness (mm)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-syringe input-icon"></i>
+                                <input type="number" name="insulin" id="insulin" min="0" max="900" value="80">
+                                <label>Insulin (mu U/mL)</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-weight input-icon"></i>
+                                <input type="number" name="bmi" id="bmi" min="0" max="70" value="25.0" step="0.1">
+                                <label>BMI (kg/m2)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-dna input-icon"></i>
+                                <input type="number" name="diabetes_pedigree" id="diabetes_pedigree" min="0" max="3" value="0.5" step="0.001">
+                                <label>Diabetes Pedigree</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-birthday-cake input-icon"></i>
+                                <input type="number" name="age" id="age" min="1" max="120" value="30">
+                                <label>Age (years)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group model-select">
+                        <div class="input-wrapper">
+                            <i class="fas fa-robot input-icon"></i>
+                            <select name="selected_model" id="selected_model">
+                                <option value="All Models (Ensemble)">All Models (Ensemble)</option>
+                                {% for name in model_names %}
+                                <option value="{{ name }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label>Select Algorithm</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full btn-lg predict-btn" id="predictBtn">
+                        <span class="btn-text"><i class="fas fa-magic"></i> PREDICT DIABETES RISK</span>
+                        <span class="btn-loader"><i class="fas fa-circle-notch fa-spin"></i> Analyzing...</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Results Panel -->
+    <div class="dashboard-result-panel" data-gsap="fade-left">
+        <div class="result-placeholder" id="resultPlaceholder">
+            <div class="placeholder-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3>Ready to Predict</h3>
+            <p>Enter patient data and click "Predict" to see AI-powered risk assessment</p>
+        </div>
+
+        <div class="result-content" id="resultContent" style="display: none;">
+            <!-- Gauge Card -->
+            <div class="glass-card gauge-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tachometer-alt"></i> Risk Assessment</h3>
+                    <span class="risk-badge" id="riskBadge">--</span>
+                </div>
+                <div class="card-body">
+                    <div class="gauge-container">
+                        <canvas id="riskGauge" width="280" height="160"></canvas>
+                        <div class="gauge-text">
+                            <div class="gauge-probability" id="gaugeProbability">0%</div>
+                            <div class="gauge-label">Diabetes Probability</div>
+                        </div>
+                    </div>
+                    <div class="prediction-verdict" id="predictionVerdict">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Waiting for prediction...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Breakdown -->
+            <div class="glass-card breakdown-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-brain"></i> Model Breakdown</h3>
+                </div>
+                <div class="card-body">
+                    <div class="model-bars" id="modelBars">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="glass-card reco-card" id="recommendationsCard">
+                <div class="card-header">
+                    <h3><i class="fas fa-lightbulb"></i> Recommendations</h3>
+                </div>
+                <div class="card-body" id="recommendationsBody">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dataset Upload Section -->
+<section class="section upload-section">
+    <div class="glass-card upload-card" data-gsap="fade-up">
+        <div class="card-header">
+            <h3><i class="fas fa-upload"></i> Dataset Upload & Training</h3>
+        </div>
+        <div class="card-body">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <h4>Drop your CSV file here</h4>
+                <p>or click to browse. Must contain: Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age, Outcome</p>
+                <input type="file" id="datasetFile" accept=".csv" hidden>
+                <button type="button" class="btn btn-glass" onclick="document.getElementById('datasetFile').click()">
+                    <i class="fas fa-folder-open"></i> Choose File
+                </button>
+            </div>
+            <div class="upload-progress" id="uploadProgress" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-text" id="progressText">Uploading...</span>
+            </div>
+            <div class="upload-result" id="uploadResult" style="display: none;">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Predictions -->
+{% if recent_predictions %}
+<section class="section history-section">
+    <div class="glass-card" data-gsap="fade-up">
+        <div class="card-header">
+            <h3><i class="fas fa-history"></i> Recent Predictions</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Glucose</th>
+                            <th>BMI</th>
+                            <th>Age</th>
+                            <th>Model</th>
+                            <th>Risk</th>
+                            <th>Probability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pred in recent_predictions %}
+                        <tr>
+                            <td>{{ pred.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ pred.glucose }}</td>
+                            <td>{{ pred.bmi }}</td>
+                            <td>{{ pred.age }}</td>
+                            <td>{{ pred.selected_model }}</td>
+                            <td>
+                                <span class="risk-pill risk-{{ pred.risk_level|lower|replace(' ', '-') }}">
+                                    {{ pred.risk_level }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="prob-bar-mini">
+                                    <div class="prob-fill" style="width: {{ pred.ensemble_probability * 100 }}%; background: {% if pred.ensemble_probability < 0.3 %}#22c55e{% elif pred.ensemble_probability < 0.6 %}#eab308{% elif pred.ensemble_probability < 0.8 %}#f97316{% else %}#ef4444{% endif %}"></div>
+                                    <span>{{ "%.1f"|format(pred.ensemble_probability * 100) }}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Presets
+const presets = {
+    healthy: { pregnancies: 1, glucose: 85, blood_pressure: 72, skin_thickness: 18, insulin: 60, bmi: 22.0, diabetes_pedigree: 0.2, age: 28 },
+    atrisk: { pregnancies: 3, glucose: 115, blood_pressure: 78, skin_thickness: 25, insulin: 110, bmi: 28.0, diabetes_pedigree: 0.6, age: 42 },
+    highrisk: { pregnancies: 5, glucose: 155, blood_pressure: 88, skin_thickness: 35, insulin: 180, bmi: 34.0, diabetes_pedigree: 1.2, age: 55 }
+};
+
+function applyPreset(name) {
+    const p = presets[name];
+    if (!p) return;
+    Object.keys(p).forEach(key => {
+        const el = document.getElementById(key);
+        if (el) {
+            el.value = p[key];
+            el.parentElement.classList.add('filled');
+        }
+    });
+    // Visual feedback
+    const btn = event.target.closest('button');
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(() => btn.style.transform = '', 150);
+}
+
+// Prediction Form
+let gaugeChart = null;
+
+document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('predictBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    const data = {
+        pregnancies: parseFloat(document.getElementById('pregnancies').value) || 0,
+        glucose: parseFloat(document.getElementById('glucose').value) || 0,
+        blood_pressure: parseFloat(document.getElementById('blood_pressure').value) || 0,
+        skin_thickness: parseFloat(document.getElementById('skin_thickness').value) || 0,
+        insulin: parseFloat(document.getElementById('insulin').value) || 0,
+        bmi: parseFloat(document.getElementById('bmi').value) || 0,
+        diabetes_pedigree: parseFloat(document.getElementById('diabetes_pedigree').value) || 0,
+        age: parseFloat(document.getElementById('age').value) || 0,
+        selected_model: document.getElementById('selected_model').value
+    };
+
+    try {
+        const res = await fetch('/api/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+
+        if (result.success) {
+            showResults(result);
+        } else {
+            alert('Prediction failed: ' + result.error);
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+});
+
+function showResults(result) {
+    document.getElementById('resultPlaceholder').style.display = 'none';
+    document.getElementById('resultContent').style.display = 'block';
+
+    // Risk badge
+    const badge = document.getElementById('riskBadge');
+    badge.textContent = result.risk_level;
+    badge.style.background = result.risk_color + '33';
+    badge.style.color = result.risk_color;
+    badge.style.borderColor = result.risk_color;
+
+    // Gauge
+    const prob = result.ensemble_probability;
+    document.getElementById('gaugeProbability').textContent = prob.toFixed(1) + '%';
+    drawGauge(prob, result.risk_color);
+
+    // Verdict
+    const verdict = document.getElementById('predictionVerdict');
+    if (result.ensemble_prediction === 1) {
+        verdict.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i><span style="color: #ef4444;"><strong>Diabetes Detected</strong> - Please consult a doctor</span>';
+        verdict.className = 'prediction-verdict verdict-positive';
+    } else {
+        verdict.innerHTML = '<i class="fas fa-check-circle" style="color: #22c55e;"></i><span style="color: #22c55e;"><strong>No Diabetes Detected</strong> - Maintain healthy lifestyle</span>';
+        verdict.className = 'prediction-verdict verdict-negative';
+    }
+
+    // Model bars
+    const barsContainer = document.getElementById('modelBars');
+    barsContainer.innerHTML = '';
+    Object.entries(result.model_probabilities).forEach(([name, prob]) => {
+        const isHigh = prob > 50;
+        barsContainer.innerHTML += `
+            <div class="model-bar-row">
+                <span class="model-name">${name}</span>
+                <div class="model-bar-track">
+                    <div class="model-bar-fill" style="width: ${prob}%; background: ${isHigh ? 'linear-gradient(90deg, #ef4444, #f97316)' : 'linear-gradient(90deg, #22c55e, #10b981)'};"></div>
+                </div>
+                <span class="model-prob ${isHigh ? 'prob-high' : 'prob-low'}">${prob.toFixed(1)}%</span>
+            </div>
+        `;
+    });
+
+    // Recommendations
+    const recoBody = document.getElementById('recommendationsBody');
+    const recoCard = document.getElementById('recommendationsCard');
+
+    if (result.ensemble_prediction === 1) {
+        recoCard.style.borderLeft = '4px solid #ef4444';
+        recoBody.innerHTML = `
+            <div class="reco-list reco-warning">
+                <div class="reco-item"><i class="fas fa-hospital"></i><span><strong>Consult a Doctor:</strong> Schedule an appointment with an endocrinologist for proper diagnosis.</span></div>
+                <div class="reco-item"><i class="fas fa-vial"></i><span><strong>HbA1c Test:</strong> Get a glycated hemoglobin test for accurate diabetes assessment.</span></div>
+                <div class="reco-item"><i class="fas fa-apple-alt"></i><span><strong>Dietary Changes:</strong> Reduce sugar and carbohydrate intake; follow a diabetic-friendly diet.</span></div>
+                <div class="reco-item"><i class="fas fa-running"></i><span><strong>Exercise:</strong> Aim for at least 150 minutes of moderate physical activity per week.</span></div>
+                <div class="reco-item"><i class="fas fa-weight"></i><span><strong>Weight Management:</strong> Maintain a healthy BMI through diet and exercise.</span></div>
+                <div class="reco-item"><i class="fas fa-pills"></i><span><strong>Medication:</strong> Follow doctor's advice regarding any prescribed medications.</span></div>
+                <div class="reco-item"><i class="fas fa-calendar-check"></i><span><strong>Regular Monitoring:</strong> Check blood glucose levels regularly.</span></div>
+            </div>
+        `;
+    } else {
+        recoCard.style.borderLeft = '4px solid #22c55e';
+        recoBody.innerHTML = `
+            <div class="reco-list reco-success">
+                <div class="reco-item"><i class="fas fa-carrot"></i><span><strong>Balanced Diet:</strong> Continue eating a balanced diet rich in vegetables and whole grains.</span></div>
+                <div class="reco-item"><i class="fas fa-dumbbell"></i><span><strong>Stay Active:</strong> Maintain regular physical activity.</span></div>
+                <div class="reco-item"><i class="fas fa-balance-scale"></i><span><strong>Healthy Weight:</strong> Keep your BMI in the healthy range (18.5-24.9).</span></div>
+                <div class="reco-item"><i class="fas fa-stethoscope"></i><span><strong>Annual Checkups:</strong> Continue regular health screenings.</span></div>
+                <div class="reco-item"><i class="fas fa-ban"></i><span><strong>Avoid Smoking:</strong> Smoking increases diabetes risk significantly.</span></div>
+                <div class="reco-item"><i class="fas fa-bed"></i><span><strong>Sleep Well:</strong> Aim for 7-9 hours of quality sleep per night.</span></div>
+            </div>
+        `;
+    }
+
+    // Animate in
+    gsap.from('#resultContent > .glass-card', {
+        y: 30, opacity: 0, duration: 0.6, stagger: 0.15, ease: 'power2.out'
+    });
+}
+
+function drawGauge(value, color) {
+    const canvas = document.getElementById('riskGauge');
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height - 20;
+    const radius = 100;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Background arc
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, Math.PI, 0);
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 20;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Gradient arc
+    const gradient = ctx.createLinearGradient(centerX - radius, centerY, centerX + radius, centerY);
+    gradient.addColorStop(0, '#22c55e');
+    gradient.addColorStop(0.5, '#eab308');
+    gradient.addColorStop(1, '#ef4444');
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, Math.PI, Math.PI + (Math.PI * value / 100));
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 20;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Needle
+    const angle = Math.PI + (Math.PI * value / 100);
+    const needleLen = radius - 10;
+    const nx = centerX + Math.cos(angle) * needleLen;
+    const ny = centerY + Math.sin(angle) * needleLen;
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(nx, ny);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Center dot
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+}
+
+// Dataset Upload
+document.getElementById('datasetFile').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const uploadArea = document.getElementById('uploadArea');
+    const progressDiv = document.getElementById('uploadProgress');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const resultDiv = document.getElementById('uploadResult');
+
+    uploadArea.style.display = 'none';
+    progressDiv.style.display = 'block';
+    resultDiv.style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Animate progress
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 90) progress = 90;
+        progressFill.style.width = progress + '%';
+    }, 200);
+
+    try {
+        const res = await fetch('/api/upload-dataset', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await res.json();
+        clearInterval(interval);
+        progressFill.style.width = '100%';
+
+        setTimeout(() => {
+            progressDiv.style.display = 'none';
+            resultDiv.style.display = 'block';
+
+            if (result.success) {
+                resultDiv.innerHTML = `
+                    <div class="upload-success">
+                        <i class="fas fa-check-circle"></i>
+                        <h4>Training Complete!</h4>
+                        <p><strong>Best Model:</strong> <span class="gradient-text">${result.best_model}</span></p>
+                        <p><strong>Samples:</strong> ${result.stats.total_samples} | <strong>Features:</strong> ${result.stats.features}</p>
+                        <button class="btn btn-primary" onclick="location.reload()">
+                            <i class="fas fa-sync"></i> Refresh Dashboard
+                        </button>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="upload-error">
+                        <i class="fas fa-times-circle"></i>
+                        <h4>Training Failed</h4>
+                        <p>${result.error}</p>
+                        <button class="btn btn-glass" onclick="resetUpload()">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }, 500);
+    } catch (err) {
+        clearInterval(interval);
+        progressDiv.style.display = 'none';
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <div class="upload-error">
+                <i class="fas fa-times-circle"></i>
+                <h4>Error</h4>
+                <p>${err.message}</p>
+                <button class="btn btn-glass" onclick="resetUpload()">Try Again</button>
+            </div>
+        `;
+    }
+});
+
+function resetUpload() {
+    document.getElementById('uploadArea').style.display = 'block';
+    document.getElementById('uploadProgress').style.display = 'none';
+    document.getElementById('uploadResult').style.display = 'none';
+    document.getElementById('datasetFile').value = '';
+}
+</script>
+{% endblock %}

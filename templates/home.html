@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}Home - {{ brand_name }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge" data-gsap="fade-up">
+            <i class="fas fa-sparkles"></i>
+            <span>AI-Powered Health Analytics</span>
+        </div>
+        <h1 class="hero-title" data-gsap="fade-up" data-delay="0.1">
+            Predict Diabetes Risk with
+            <span class="gradient-text">Machine Learning</span>
+        </h1>
+        <p class="hero-subtitle" data-gsap="fade-up" data-delay="0.2">
+            Leverage 7 advanced data mining algorithms to assess diabetes risk in real-time. 
+            Upload your dataset, train models, and get instant predictions with stunning visualizations.
+        </p>
+        <div class="hero-cta" data-gsap="fade-up" data-delay="0.3">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-chart-line"></i>
+                Go to Dashboard
+            </a>
+            {% else %}
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket"></i>
+                Get Started Free
+            </a>
+            {% endif %}
+            <a href="{{ url_for('features') }}" class="btn btn-glass btn-lg">
+                <i class="fas fa-play"></i>
+                Explore Features
+            </a>
+        </div>
+
+        <!-- Floating Stats Cards -->
+        <div class="hero-stats" data-gsap="fade-up" data-delay="0.4">
+            <div class="stat-card glass">
+                <div class="stat-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="stat-value">7</div>
+                <div class="stat-label">ML Algorithms</div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="stat-value">79.8%</div>
+                <div class="stat-label">Best AUC-ROC</div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="stat-value">768+</div>
+                <div class="stat-label">Data Samples</div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="stat-value">< 1s</div>
+                <div class="stat-label">Prediction Speed</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Visual -->
+    <div class="hero-visual" data-gsap="scale-in" data-delay="0.5">
+        <div class="glass-card hero-card">
+            <div class="card-header">
+                <div class="card-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <span class="card-title"><i class="fas fa-dna"></i> Prediction Result</span>
+            </div>
+            <div class="card-body">
+                <div class="result-gauge">
+                    <svg viewBox="0 0 200 120">
+                        <defs>
+                            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#22c55e"/>
+                                <stop offset="50%" style="stop-color:#eab308"/>
+                                <stop offset="100%" style="stop-color:#ef4444"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12" stroke-linecap="round"/>
+                        <path d="M 20 100 A 80 80 0 0 1 140 35" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-linecap="round" class="gauge-arc"/>
+                        <circle cx="140" cy="35" r="6" fill="#fff" class="gauge-needle"/>
+                    </svg>
+                    <div class="gauge-value">72.1%</div>
+                    <div class="gauge-label">Risk Probability</div>
+                </div>
+                <div class="result-details">
+                    <div class="detail-row">
+                        <span><i class="fas fa-check-circle"></i> Logistic Regression</span>
+                        <span class="prob-high">64.1%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span><i class="fas fa-check-circle"></i> Random Forest</span>
+                        <span class="prob-med">68.8%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span><i class="fas fa-check-circle"></i> Gradient Boosting</span>
+                        <span class="prob-high">60.0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Preview Section -->
+<section class="section section-dark">
+    <div class="section-header" data-gsap="fade-up">
+        <span class="section-badge">Capabilities</span>
+        <h2 class="section-title">What Makes Us <span class="gradient-text">Powerful</span></h2>
+        <p class="section-subtitle">A complete data mining pipeline from dataset upload to real-time prediction</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card glass" data-gsap="fade-up" data-delay="0.1">
+            <div class="feature-icon">
+                <i class="fas fa-upload"></i>
+            </div>
+            <h3>Dataset Upload</h3>
+            <p>Upload your own CSV dataset with 8 medical parameters. Auto-validates columns and replaces existing data seamlessly.</p>
+            <div class="feature-tags">
+                <span class="tag">CSV</span>
+                <span class="tag">Auto-Validate</span>
+            </div>
+        </div>
+
+        <div class="feature-card glass" data-gsap="fade-up" data-delay="0.2">
+            <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h3>7 ML Algorithms</h3>
+            <p>Train Logistic Regression, Random Forest, SVM, KNN, Decision Tree, Gradient Boosting, and Naive Bayes simultaneously.</p>
+            <div class="feature-tags">
+                <span class="tag">Ensemble</span>
+                <span class="tag">Cross-Validation</span>
+            </div>
+        </div>
+
+        <div class="feature-card glass" data-gsap="fade-up" data-delay="0.3">
+            <div class="feature-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3>Real-Time Predictions</h3>
+            <p>Get instant diabetes risk predictions with animated gauge charts, probability breakdowns, and health recommendations.</p>
+            <div class="feature-tags">
+                <span class="tag">Gauge</span>
+                <span class="tag">Charts</span>
+            </div>
+        </div>
+
+        <div class="feature-card glass" data-gsap="fade-up" data-delay="0.4">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Secure & Persistent</h3>
+            <p>SQLite database stores all predictions per user. Review your complete prediction history anytime from your profile.</p>
+            <div class="feature-tags">
+                <span class="tag">SQLite</span>
+                <span class="tag">History</span>
+            </div>
+        </div>
+
+        <div class="feature-card glass" data-gsap="fade-up" data-delay="0.5">
+            <div class="feature-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h3>Model Comparison</h3>
+            <p>Compare all 7 algorithms with interactive bar charts, radar charts, and detailed metrics tables side-by-side.</p>
+            <div class="feature-tags">
+                <span class="tag">Radar</span>
+                <span class="tag">Bar Charts</span>
+            </div>
+        </div>
+
+        <div class="feature-card glass" data-gsap="fade-up" data-delay="0.6">
+            <div class="feature-icon">
+                <i class="fas fa-flask"></i>
+            </div>
+            <h3>Data Analysis</h3>
+            <p>Explore correlation heatmaps, feature distributions, box plots, and pair plots for deep dataset understanding.</p>
+            <div class="feature-tags">
+                <span class="tag">Heatmap</span>
+                <span class="tag">Distribution</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="section">
+    <div class="section-header" data-gsap="fade-up">
+        <span class="section-badge">Workflow</span>
+        <h2 class="section-title">How It <span class="gradient-text">Works</span></h2>
+    </div>
+
+    <div class="workflow">
+        <div class="workflow-step" data-gsap="fade-right" data-delay="0.1">
+            <div class="step-number">01</div>
+            <div class="step-content glass">
+                <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                <h3>Create Account</h3>
+                <p>Sign up with username, email, and password. Secure bcrypt hashing protects your credentials.</p>
+            </div>
+        </div>
+        <div class="workflow-connector"></div>
+        <div class="workflow-step" data-gsap="fade-up" data-delay="0.2">
+            <div class="step-number">02</div>
+            <div class="step-content glass">
+                <div class="step-icon"><i class="fas fa-upload"></i></div>
+                <h3>Upload Dataset</h3>
+                <p>Upload your diabetes CSV or use the default Pima Indians dataset. Auto-validation ensures correct format.</p>
+            </div>
+        </div>
+        <div class="workflow-connector"></div>
+        <div class="workflow-step" data-gsap="fade-left" data-delay="0.3">
+            <div class="step-number">03</div>
+            <div class="step-content glass">
+                <div class="step-icon"><i class="fas fa-cogs"></i></div>
+                <h3>Train Models</h3>
+                <p>One-click training of 7 algorithms. Cross-validation, metrics calculation, and best model selection — all automatic.</p>
+            </div>
+        </div>
+        <div class="workflow-connector"></div>
+        <div class="workflow-step" data-gsap="fade-right" data-delay="0.4">
+            <div class="step-number">04</div>
+            <div class="step-content glass">
+                <div class="step-icon"><i class="fas fa-stethoscope"></i></div>
+                <h3>Predict & Analyze</h3>
+                <p>Enter patient data, select model or ensemble, and get animated risk gauges with personalized health recommendations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dataset Stats Section -->
+{% if stats %}
+<section class="section section-dark">
+    <div class="section-header" data-gsap="fade-up">
+        <span class="section-badge">Dataset</span>
+        <h2 class="section-title">Current <span class="gradient-text">Dataset</span> Overview</h2>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-panel glass" data-gsap="scale-in" data-delay="0.1">
+            <div class="stat-panel-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-panel-value">{{ stats.total_samples }}</div>
+            <div class="stat-panel-label">Total Samples</div>
+        </div>
+        <div class="stat-panel glass" data-gsap="scale-in" data-delay="0.15">
+            <div class="stat-panel-icon"><i class="fas fa-list"></i></div>
+            <div class="stat-panel-value">{{ stats.features }}</div>
+            <div class="stat-panel-label">Features</div>
+        </div>
+        <div class="stat-panel glass" data-gsap="scale-in" data-delay="0.2">
+            <div class="stat-panel-icon"><i class="fas fa-heartbeat"></i></div>
+            <div class="stat-panel-value">{{ stats.diabetic_cases }}</div>
+            <div class="stat-panel-label">Diabetic Cases</div>
+        </div>
+        <div class="stat-panel glass" data-gsap="scale-in" data-delay="0.25">
+            <div class="stat-panel-icon"><i class="fas fa-heart"></i></div>
+            <div class="stat-panel-value">{{ stats.non_diabetic_cases }}</div>
+            <div class="stat-panel-label">Non-Diabetic Cases</div>
+        </div>
+    </div>
+
+    <div class="dataset-chart-container" data-gsap="fade-up" data-delay="0.3">
+        <div class="glass-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-pie"></i> Class Distribution</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="classDistChart" height="200"></canvas>
+            </div>
+        </div>
+        <div class="glass-card">
+            <div class="card-header">
+                <h3><i class="fas fa-fire"></i> Feature Correlation with Outcome</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="corrChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="section cta-section">
+    <div class="cta-content glass" data-gsap="fade-up">
+        <h2>Ready to Analyze Your Data?</h2>
+        <p>Join hundreds of users leveraging AI for diabetes risk assessment. Start your journey today.</p>
+        <div class="cta-buttons">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-chart-line"></i> Open Dashboard
+            </a>
+            {% else %}
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket"></i> Create Free Account
+            </a>
+            {% endif %}
+            <a href="{{ brand_github }}" target="_blank" class="btn btn-glass btn-lg">
+                <i class="fab fa-github"></i> View on GitHub
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Class Distribution Chart
+{% if stats %}
+const classCtx = document.getElementById('classDistChart').getContext('2d');
+new Chart(classCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Non-Diabetic', 'Diabetic'],
+        datasets: [{
+            data: [{{ stats.non_diabetic_cases }}, {{ stats.diabetic_cases }}],
+            backgroundColor: ['rgba(34, 197, 94, 0.8)', 'rgba(239, 68, 68, 0.8)'],
+            borderColor: ['rgba(34, 197, 94, 1)', 'rgba(239, 68, 68, 1)'],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { color: '#e2e8f0' } }
+        }
+    }
+});
+
+// Correlation Chart
+const corrCtx = document.getElementById('corrChart').getContext('2d');
+const corrData = {{ stats.correlation | tojson }};
+new Chart(corrCtx, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(corrData),
+        datasets: [{
+            label: 'Correlation',
+            data: Object.values(corrData),
+            backgroundColor: Object.values(corrData).map(v => v > 0 ? 'rgba(99, 102, 241, 0.8)' : 'rgba(239, 68, 68, 0.8)'),
+            borderRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+        }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

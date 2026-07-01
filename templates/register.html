@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Register - {{ brand_name }}{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-visual" data-gsap="fade-right">
+            <div class="auth-brand">
+                <div class="brand-icon-large">
+                    <i class="fas fa-dna"></i>
+                </div>
+                <h2>{{ brand_name }}</h2>
+                <p>{{ brand_tagline }}</p>
+            </div>
+            <div class="auth-features">
+                <div class="auth-feature">
+                    <i class="fas fa-brain"></i>
+                    <span>7 ML Algorithms</span>
+                </div>
+                <div class="auth-feature">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Real-Time Predictions</span>
+                </div>
+                <div class="auth-feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure & Private</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-form-wrapper" data-gsap="fade-left">
+            <div class="glass-card auth-card">
+                <div class="auth-header">
+                    <h2>Create Account</h2>
+                    <p>Join the AI-powered health analytics platform</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('register') }}" class="auth-form" id="registerForm">
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" name="username" id="username" placeholder=" " required minlength="3">
+                            <label for="username">Username</label>
+                        </div>
+                        <span class="field-hint">At least 3 characters</span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" name="email" id="email" placeholder=" ">
+                            <label for="email">Email (optional)</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-badge input-icon"></i>
+                            <input type="text" name="full_name" id="full_name" placeholder=" ">
+                            <label for="full_name">Full Name (optional)</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" name="password" id="password" placeholder=" " required minlength="6" oninput="checkStrength()">
+                            <label for="password">Password</label>
+                            <button type="button" class="toggle-password" onclick="togglePassword('password', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="strengthBar">
+                            <div class="strength-fill"></div>
+                        </div>
+                        <span class="field-hint">At least 6 characters</span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" name="confirm_password" id="confirm_password" placeholder=" " required>
+                            <label for="confirm_password">Confirm Password</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full btn-lg" id="registerBtn">
+                        <span class="btn-text"><i class="fas fa-user-plus"></i> Create Account</span>
+                        <span class="btn-loader"><i class="fas fa-circle-notch fa-spin"></i></span>
+                    </button>
+                </form>
+
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('registerBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+});
+
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+function checkStrength() {
+    const password = document.getElementById('password').value;
+    const fill = document.querySelector('.strength-fill');
+    let strength = 0;
+
+    if (password.length >= 6) strength++;
+    if (password.length >= 10) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+    const width = Math.min((strength / 5) * 100, 100);
+    fill.style.width = width + '%';
+
+    if (strength <= 2) fill.style.background = '#ef4444';
+    else if (strength <= 3) fill.style.background = '#eab308';
+    else if (strength <= 4) fill.style.background = '#22c55e';
+    else fill.style.background = '#10b981';
+}
+</script>
+{% endblock %}

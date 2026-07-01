@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Features - {{ brand_name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="page-header-content" data-gsap="fade-up">
+        <span class="page-badge">Capabilities</span>
+        <h1>Platform <span class="gradient-text">Features</span></h1>
+        <p>Explore the complete data mining pipeline powering diabetes risk prediction</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header" data-gsap="fade-up">
+        <span class="section-badge">Pipeline</span>
+        <h2 class="section-title">ML <span class="gradient-text">Pipeline</span></h2>
+    </div>
+    <div class="pipeline-grid">
+        <div class="pipeline-card glass" data-gsap="fade-up" data-delay="0.1">
+            <div class="pipeline-step">01</div>
+            <div class="pipeline-icon"><i class="fas fa-database"></i></div>
+            <h3>Data Ingestion</h3>
+            <p>Upload CSV datasets with 8 required medical parameters. Auto-validation ensures correct format.</p>
+            <div class="pipeline-meta">
+                <span class="tag">CSV Upload</span>
+                <span class="tag">Auto-Validate</span>
+            </div>
+        </div>
+        <div class="pipeline-card glass" data-gsap="fade-up" data-delay="0.2">
+            <div class="pipeline-step">02</div>
+            <div class="pipeline-icon"><i class="fas fa-broom"></i></div>
+            <h3>Preprocessing</h3>
+            <p>StandardScaler normalization with stratified 80/20 train-test split.</p>
+            <div class="pipeline-meta">
+                <span class="tag">StandardScaler</span>
+                <span class="tag">Stratified</span>
+            </div>
+        </div>
+        <div class="pipeline-card glass" data-gsap="fade-up" data-delay="0.3">
+            <div class="pipeline-step">03</div>
+            <div class="pipeline-icon"><i class="fas fa-brain"></i></div>
+            <h3>Model Training</h3>
+            <p>7 algorithms trained in parallel with 5-fold cross-validation.</p>
+            <div class="pipeline-meta">
+                <span class="tag">7 Algorithms</span>
+                <span class="tag">5-Fold CV</span>
+            </div>
+        </div>
+        <div class="pipeline-card glass" data-gsap="fade-up" data-delay="0.4">
+            <div class="pipeline-step">04</div>
+            <div class="pipeline-icon"><i class="fas fa-trophy"></i></div>
+            <h3>Best Model Selection</h3>
+            <p>Auto-selected by F1-Score balancing precision and recall.</p>
+            <div class="pipeline-meta">
+                <span class="tag">F1-Score</span>
+                <span class="tag">Auto-Select</span>
+            </div>
+        </div>
+        <div class="pipeline-card glass" data-gsap="fade-up" data-delay="0.5">
+            <div class="pipeline-step">05</div>
+            <div class="pipeline-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Prediction</h3>
+            <p>Real-time inference with ensemble averaging and risk level mapping.</p>
+            <div class="pipeline-meta">
+                <span class="tag">Ensemble</span>
+                <span class="tag">Risk Levels</span>
+            </div>
+        </div>
+        <div class="pipeline-card glass" data-gsap="fade-up" data-delay="0.6">
+            <div class="pipeline-step">06</div>
+            <div class="pipeline-icon"><i class="fas fa-lightbulb"></i></div>
+            <h3>Recommendations</h3>
+            <p>Personalized health advice based on prediction outcome.</p>
+            <div class="pipeline-meta">
+                <span class="tag">Personalized</span>
+                <span class="tag">Actionable</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if ml_ready %}
+<section class="section section-dark">
+    <div class="section-header" data-gsap="fade-up">
+        <span class="section-badge">Models</span>
+        <h2 class="section-title">Algorithm <span class="gradient-text">Comparison</span></h2>
+        <p class="section-subtitle">Best model: <strong class="gradient-text">{{ best_model }}</strong></p>
+    </div>
+    <div class="glass-card table-card" data-gsap="fade-up" data-delay="0.1">
+        <div class="card-header">
+            <h3><i class="fas fa-table"></i> Performance Metrics</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>AUC-ROC</th><th>CV Mean</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for model in model_results %}
+                        <tr class="{% if model.is_best %}best-row{% endif %}">
+                            <td><strong>{{ model.name }}</strong>{% if model.is_best %}<span class="best-badge"><i class="fas fa-crown"></i> BEST</span>{% endif %}</td>
+                            <td>{{ "%.4f"|format(model.Accuracy) }}</td>
+                            <td>{{ "%.4f"|format(model.Precision) }}</td>
+                            <td>{{ "%.4f"|format(model.Recall) }}</td>
+                            <td class="highlight">{{ "%.4f"|format(model['F1-Score']) }}</td>
+                            <td>{{ "%.4f"|format(model['AUC-ROC']) }}</td>
+                            <td>{{ "%.4f"|format(model['CV Mean']) }}</td>
+                            <td>{% if model.is_best %}<span class="status-badge status-best">Selected</span>{% else %}<span class="status-badge status-ok">Trained</span>{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="chart-grid" data-gsap="fade-up" data-delay="0.2">
+        <div class="glass-card">
+            <div class="card-header"><h3><i class="fas fa-chart-bar"></i> F1-Score</h3></div>
+            <div class="card-body"><canvas id="f1Chart"></canvas></div>
+        </div>
+        <div class="glass-card">
+            <div class="card-header"><h3><i class="fas fa-chart-bar"></i> AUC-ROC</h3></div>
+            <div class="card-body"><canvas id="aucChart"></canvas></div>
+        </div>
+    </div>
+    <div class="glass-card radar-card" data-gsap="fade-up" data-delay="0.3">
+        <div class="card-header"><h3><i class="fas fa-bullseye"></i> Multi-Metric Radar</h3></div>
+        <div class="card-body"><canvas id="radarChart"></canvas></div>
+    </div>
+</section>
+{% else %}
+<section class="section section-dark">
+    <div class="empty-state" data-gsap="fade-up">
+        <div class="empty-icon"><i class="fas fa-cogs"></i></div>
+        <h3>Models Not Trained Yet</h3>
+        <p>Upload a dataset and train models to see comparison charts.</p>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary"><i class="fas fa-upload"></i> Go to Dashboard</a>
+        {% else %}
+        <a href="{{ url_for('register') }}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Get Started</a>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<section class="section">
+    <div class="section-header" data-gsap="fade-up">
+        <span class="section-badge">Guide</span>
+        <h2 class="section-title">Input <span class="gradient-text">Parameters</span></h2>
+    </div>
+    <div class="guide-grid">
+        <div class="guide-card glass" data-gsap="fade-up" data-delay="0.1">
+            <div class="guide-icon"><i class="fas fa-baby"></i></div>
+            <h3>Pregnancies</h3>
+            <p>Number of times pregnant.</p>
+            <div class="guide-range"><span class="range-label">Normal:</span><span class="range-value">0-10</span></div>
+            <div class="guide-risk"><i class="fas fa-exclamation-triangle"></i> Higher counts increase risk</div>
+        </div>
+        <div class="guide-card glass" data-gsap="fade-up" data-delay="0.15">
+            <div class="guide-icon"><i class="fas fa-tint"></i></div>
+            <h3>Glucose</h3>
+            <p>Plasma glucose after 2h OGTT (mg/dL).</p>
+            <div class="guide-range"><span class="range-label">Normal:</span><span class="range-value">70-100</span></div>
+            <div class="guide-risk"><i class="fas fa-exclamation-triangle"></i> &gt;126 = diabetes</div>
+        </div>
+        <div class="guide-card glass" data-gsap="fade-up" data-delay="0.2">
+            <div class="guide-icon"><i class="fas fa-heartbeat"></i></div>
+            <h3>Blood Pressure</h3>
+            <p>Diastolic BP in mm Hg.</p>
+            <div class="guide-range"><span class="range-label">Normal:</span><span class="range-value">60-80</span></div>
+            <div class="guide-risk"><i class="fas fa-exclamation-triangle"></i> &gt;90 = hypertension</div>
+        </div>
+        <div class="guide-card glass" data-gsap="fade-up" data-delay="0.25">
+            <div class="guide-icon"><i class="fas fa-ruler"></i></div>
+            <h3>Skin Thickness</h3>
+            <p>Triceps skin fold thickness (mm).</p>
+            <div class="guide-range"><span class="range-label">Normal:</span><span class="range-value">10-50</span></div>
+            <div class="guide-risk"><i class="fas fa-exclamation-triangle"></i> Higher = obesity risk</div>
+        </div>
+        <div class="guide-card glass" data-gsap="fade-up" data-delay="0.3">
+            <div class="guide-icon"><i class="fas fa-syringe"></i></div>
+            <h3>Insulin</h3>
+            <p>2-Hour serum insulin (mu U/mL).</p>
+            <div class="guide-range"><span class="range-label">Normal:</span><span class="range-value">16-166</span></div>
+            <div class="guide-risk"><i class="fas fa-exclamation-triangle"></i> Abnormal = resistance</div>
+        </div>
+        <div class="guide-card glass" data-gsap="fade-up" data-delay="0.35">
+            <div class="guide-icon"><i class="fas fa-weight"></i></div>
+            <h3>BMI</h3>
+            <p>Body Mass Index (kg/m2).</p>
+            <div class="guide-range"><span class="range-label">Normal:</span><span class="range-value">18.5-24.9</span></div>
+            <div class="guide-risk"><i class="fas fa-exclamation-triangle"></i> &gt;30 = obese</div>
+        </div>
+        <div class="guide-card glass" data-gsap="fade-up" data-delay="0.4">
+            <div class="guide-icon"><i class="fas fa-dna"></i></div>
+            <h3>Diabetes Pedigree</h3>
+            <p>Genetic influence score.</p>
+            <div class="guide-range"><span class="range-label">Normal:</span><span class="range-value">0.0-2.5</span></div>
+            <div class="guide-risk"><i class="fas fa-exclamation-triangle"></i> &gt;1.0 = genetic risk</div>
+        </div>
+        <div class="guide-card glass" data-gsap="fade-up" data-delay="0.45">
+            <div class="guide-icon"><i class="fas fa-birthday-cake"></i></div>
+            <h3>Age</h3>
+            <p>Age in years.</p>
+            <div class="guide-range"><span class="range-label">Any age</span></div>
+            <div class="guide-risk"><i class="fas fa-exclamation-triangle"></i> Risk rises after 45</div>
+        </div>
+    </div>
+    <div class="glass-card table-card" data-gsap="fade-up" data-delay="0.5">
+        <div class="card-header"><h3><i class="fas fa-book-medical"></i> Clinical Reference Values</h3></div>
+        <div class="card-body">
+            <div class="ref-grid">
+                <div class="ref-block">
+                    <h4><i class="fas fa-tint"></i> Glucose</h4>
+                    <ul>
+                        <li><span class="ref-normal">Normal:</span> &lt; 100 mg/dL</li>
+                        <li><span class="ref-warn">Prediabetes:</span> 100-125</li>
+                        <li><span class="ref-danger">Diabetes:</span> >= 126</li>
+                    </ul>
+                </div>
+                <div class="ref-block">
+                    <h4><i class="fas fa-heartbeat"></i> Blood Pressure</h4>
+                    <ul>
+                        <li><span class="ref-normal">Normal:</span> &lt; 120/80</li>
+                        <li><span class="ref-warn">Elevated:</span> 120-129/80</li>
+                        <li><span class="ref-danger">High:</span> >= 130/80</li>
+                    </ul>
+                </div>
+                <div class="ref-block">
+                    <h4><i class="fas fa-weight"></i> BMI</h4>
+                    <ul>
+                        <li><span class="ref-normal">Normal:</span> 18.5-24.9</li>
+                        <li><span class="ref-warn">Overweight:</span> 25.0-29.9</li>
+                        <li><span class="ref-danger">Obese:</span> >= 30.0</li>
+                    </ul>
+                </div>
+                <div class="ref-block">
+                    <h4><i class="fas fa-birthday-cake"></i> Age Risk</h4>
+                    <ul>
+                        <li><span class="ref-normal">Low:</span> &lt; 35 years</li>
+                        <li><span class="ref-warn">Moderate:</span> 35-50</li>
+                        <li><span class="ref-danger">High:</span> &gt; 50</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if ml_ready %}
+<script>
+const modelResults = {{ model_results | tojson }};
+const modelNames = modelResults.map(m => m.name);
+const f1Scores = modelResults.map(m => m['F1-Score']);
+const aucScores = modelResults.map(m => m['AUC-ROC']);
+
+new Chart(document.getElementById('f1Chart'), {
+    type: 'bar',
+    data: {
+        labels: modelNames,
+        datasets: [{
+            label: 'F1-Score',
+            data: f1Scores,
+            backgroundColor: modelNames.map((_, i) => i === 0 ? 'rgba(99, 102, 241, 0.9)' : 'rgba(99, 102, 241, 0.4)'),
+            borderColor: 'rgba(99, 102, 241, 1)',
+            borderWidth: 2,
+            borderRadius: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, max: 1, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45 } }
+        }
+    }
+});
+
+new Chart(document.getElementById('aucChart'), {
+    type: 'bar',
+    data: {
+        labels: modelNames,
+        datasets: [{
+            label: 'AUC-ROC',
+            data: aucScores,
+            backgroundColor: modelNames.map((_, i) => i === 0 ? 'rgba(34, 197, 94, 0.9)' : 'rgba(34, 197, 94, 0.4)'),
+            borderColor: 'rgba(34, 197, 94, 1)',
+            borderWidth: 2,
+            borderRadius: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, max: 1, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45 } }
+        }
+    }
+});
+
+new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+        labels: ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'AUC-ROC'],
+        datasets: modelResults.slice(0, 4).map((m, i) => ({
+            label: m.name,
+            data: [m.Accuracy, m.Precision, m.Recall, m['F1-Score'], m['AUC-ROC']],
+            backgroundColor: ['rgba(99,102,241,0.2)','rgba(34,197,94,0.2)','rgba(239,68,68,0.2)','rgba(234,179,8,0.2)'][i],
+            borderColor: ['rgba(99,102,241,1)','rgba(34,197,94,1)','rgba(239,68,68,1)','rgba(234,179,8,1)'][i],
+            borderWidth: 2,
+            pointBackgroundColor: ['rgba(99,102,241,1)','rgba(34,197,94,1)','rgba(239,68,68,1)','rgba(234,179,8,1)'][i],
+        }))
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            r: { beginAtZero: true, max: 1, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#94a3b8' }, ticks: { display: false } }
+        },
+        plugins: { legend: { labels: { color: '#e2e8f0' } } }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

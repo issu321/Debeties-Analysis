@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}About - {{ brand_name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="page-header-content" data-gsap="fade-up">
+        <span class="page-badge">About</span>
+        <h1>About <span class="gradient-text">{{ brand_name }}</span></h1>
+        <p>AI-powered diabetes risk assessment using advanced data mining techniques</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="about-grid">
+        <div class="about-main" data-gsap="fade-right">
+            <div class="glass-card about-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-graduation-cap"></i> Project Overview</h3>
+                </div>
+                <div class="card-body">
+                    <p class="about-lead">
+                        <strong>{{ brand_name }}</strong> is a comprehensive machine learning platform designed to predict diabetes risk 
+                        using 7 advanced data mining algorithms. Built as an educational research project, it demonstrates the power of 
+                        ensemble learning in medical diagnostics.
+                    </p>
+
+                    <div class="about-section">
+                        <h4><i class="fas fa-cogs"></i> Methodology</h4>
+                        <div class="methodology-list">
+                            <div class="method-item">
+                                <span class="method-num">1</span>
+                                <div>
+                                    <strong>Data Collection</strong>
+                                    <p>Upload your own medical dataset or use the default Pima Indians dataset with 768 samples.</p>
+                                </div>
+                            </div>
+                            <div class="method-item">
+                                <span class="method-num">2</span>
+                                <div>
+                                    <strong>Data Preprocessing</strong>
+                                    <p>StandardScaler normalization ensures all features contribute equally regardless of scale.</p>
+                                </div>
+                            </div>
+                            <div class="method-item">
+                                <span class="method-num">3</span>
+                                <div>
+                                    <strong>Feature Engineering</strong>
+                                    <p>All 8 medical parameters used as features: Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age.</p>
+                                </div>
+                            </div>
+                            <div class="method-item">
+                                <span class="method-num">4</span>
+                                <div>
+                                    <strong>Model Training</strong>
+                                    <p>7 different ML algorithms trained and evaluated with 5-fold cross-validation.</p>
+                                </div>
+                            </div>
+                            <div class="method-item">
+                                <span class="method-num">5</span>
+                                <div>
+                                    <strong>Model Selection</strong>
+                                    <p>Best model selected automatically based on F1-Score for optimal precision-recall balance.</p>
+                                </div>
+                            </div>
+                            <div class="method-item">
+                                <span class="method-num">6</span>
+                                <div>
+                                    <strong>Deployment</strong>
+                                    <p>Interactive Flask web application with user authentication and persistent prediction history.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h4><i class="fas fa-code"></i> Technologies Used</h4>
+                        <div class="tech-grid">
+                            <div class="tech-item"><i class="fab fa-python"></i><span>Python 3.8+</span></div>
+                            <div class="tech-item"><i class="fas fa-flask"></i><span>Flask</span></div>
+                            <div class="tech-item"><i class="fas fa-database"></i><span>SQLAlchemy</span></div>
+                            <div class="tech-item"><i class="fas fa-brain"></i><span>Scikit-Learn</span></div>
+                            <div class="tech-item"><i class="fas fa-table"></i><span>Pandas & NumPy</span></div>
+                            <div class="tech-item"><i class="fas fa-chart-bar"></i><span>Chart.js</span></div>
+                            <div class="tech-item"><i class="fas fa-magic"></i><span>GSAP</span></div>
+                            <div class="tech-item"><i class="fab fa-css3"></i><span>CSS3 Glassmorphism</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="glass-card disclaimer-card" data-gsap="fade-up">
+                <div class="card-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Disclaimer</h3>
+                </div>
+                <div class="card-body">
+                    <div class="disclaimer-box">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <p><strong>This application is for educational and research purposes only.</strong></p>
+                            <p>The predictions made by this system should <strong>NOT</strong> be used as a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+                            <p>Never disregard professional medical advice or delay in seeking it because of something you have read or predicted on this platform.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-sidebar" data-gsap="fade-left">
+            <!-- Author Card -->
+            <div class="glass-card author-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user"></i> Author</h3>
+                </div>
+                <div class="card-body">
+                    <div class="author-info">
+                        <div class="author-avatar">
+                            <i class="fas fa-user-astronaut"></i>
+                        </div>
+                        <h4>{{ brand_author }}</h4>
+                        <p>AI | ML | Data Science | Futuristic Tech Explorer</p>
+                        <p class="author-location"><i class="fas fa-map-marker-alt"></i> Bangalore, India</p>
+                    </div>
+                    <div class="author-links">
+                        <a href="{{ brand_github }}" target="_blank" class="author-link">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                        <a href="{{ brand_portfolio }}" target="_blank" class="author-link">
+                            <i class="fas fa-globe"></i> Portfolio
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Models Card -->
+            <div class="glass-card models-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-brain"></i> ML Models</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="models-list">
+                        <li><i class="fas fa-check-circle"></i> Logistic Regression</li>
+                        <li><i class="fas fa-check-circle"></i> Random Forest</li>
+                        <li><i class="fas fa-check-circle"></i> Support Vector Machine</li>
+                        <li><i class="fas fa-check-circle"></i> K-Nearest Neighbors</li>
+                        <li><i class="fas fa-check-circle"></i> Decision Tree</li>
+                        <li><i class="fas fa-check-circle"></i> Gradient Boosting</li>
+                        <li><i class="fas fa-check-circle"></i> Naive Bayes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Project Stats -->
+            <div class="glass-card stats-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-pie"></i> Project Stats</h3>
+                </div>
+                <div class="card-body">
+                    <div class="project-stats">
+                        <div class="pstat">
+                            <span class="pstat-value">7</span>
+                            <span class="pstat-label">ML Algorithms</span>
+                        </div>
+                        <div class="pstat">
+                            <span class="pstat-value">8</span>
+                            <span class="pstat-label">Features</span>
+                        </div>
+                        <div class="pstat">
+                            <span class="pstat-value">5</span>
+                            <span class="pstat-label">Fold CV</span>
+                        </div>
+                        <div class="pstat">
+                            <span class="pstat-value">6</span>
+                            <span class="pstat-label">Pages</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
