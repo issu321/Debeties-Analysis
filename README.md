@@ -5,7 +5,7 @@
 
 **🩺 Diabetes Analysis
 
-Diabetes Analysis is a data analytics and machine learning project designed to explore, analyze, and predict the likelihood of diabetes using patient health records. The project leverages data preprocessing, exploratory data analysis (EDA), visualization, and predictive modeling to uncover key health indicators associated with diabetes.**
+Diabetes Analysis is a data analytics and machine learning project designed to explore, analyze, and predict the likelihood of diabetes using patient health records. The project leverages data preprocessing, exploratory data analysis (EDA), visualization, and predictive modeling to uncover key health indicators associated with diabetes.
 
 <!-- Typing Animation Badge -->
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=700&size=24&pause=1000&color=667EEA&center=true&vCenter=true&width=800&lines=Machine+Learning+%7C+Flask+%7C+Glassmorphism;7+Algorithms+%7C+Ensemble+Modeling+%7C+Real-time+Prediction;Neural+Risk+Assessment+%7C+Interactive+Dashboards)](https://git.io/typing-svg)
