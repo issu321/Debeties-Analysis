@@ -3,7 +3,7 @@
 <!-- Animated Header Banner -->
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:667eea,100:764ba2&height=280&section=header&text=Debeties%20Analysis%20V2&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=40&desc=AI-Powered%20Diabetes%20Risk%20Assessment%20Platform&descAlignY=65&descSize=18" width="100%"/>
 
-**🩺 Diabetes Analysis
+🩺 Diabetes Analysis
 
 Diabetes Analysis is a data analytics and machine learning project designed to explore, analyze, and predict the likelihood of diabetes using patient health records. The project leverages data preprocessing, exploratory data analysis (EDA), visualization, and predictive modeling to uncover key health indicators associated with diabetes.
 
